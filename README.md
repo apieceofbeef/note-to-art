@@ -38,7 +38,8 @@ Then edit `.env.local`:
 | `OPENAI_API_KEY` | yes | OpenAI key from [platform.openai.com/api-keys](https://platform.openai.com/api-keys). |
 | `OPENAI_MODEL` | no | Defaults to `gpt-4o-mini`. |
 | `NEXT_PUBLIC_SUPABASE_URL` | for auth/history | Your Supabase project URL. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | for auth/history | Your Supabase **anon public** key. |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | for auth/history (new key format) | Supabase **publishable** public key. Preferred for new projects. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | for auth/history (legacy fallback) | Supabase **anon public** key. Used if `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is not set. |
 | `NEXT_PUBLIC_SITE_URL` | recommended in prod | Base URL used for magic-link redirects (e.g. `https://note-to-art.vercel.app`). |
 
 ### 4. Run the dev server
