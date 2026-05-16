@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { isVibe, type Vibe } from "@/lib/vibes";
 import type { StudySheet } from "@/lib/types";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -141,7 +143,39 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ sheet, vibe });
+    let generationId: string | null = null;
+    if (isSupabaseConfigured) {
+      try {
+        const supabase = await createSupabaseServerClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          const { data: inserted, error: insertError } = await supabase
+            .from("generations")
+            .insert({
+              user_id: user.id,
+              input_text: trimmedNotes,
+              vibe,
+              title: sheet.title,
+              summary: sheet.summary,
+              bullet_points: sheet.bullet_points,
+              flashcards: sheet.flashcards,
+            })
+            .select("id")
+            .single();
+          if (!insertError && inserted) {
+            generationId = String(inserted.id);
+          } else if (insertError) {
+            console.error("Failed to save generation:", insertError.message);
+          }
+        }
+      } catch (e) {
+        console.error("Supabase save skipped:", e);
+      }
+    }
+
+    return NextResponse.json({ sheet, vibe, generationId });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Unexpected error calling OpenAI.";
