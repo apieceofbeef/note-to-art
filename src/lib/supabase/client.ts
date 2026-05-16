@@ -4,6 +4,6 @@ import { createBrowserClient } from "@supabase/ssr";
 import { requireSupabaseEnv } from "./env";
 
 export function createSupabaseBrowserClient() {
-  const { url, anonKey } = requireSupabaseEnv();
-  return createBrowserClient(url, anonKey);
+  const { url, publicKey } = requireSupabaseEnv();
+  return createBrowserClient(url, publicKey);
 }
